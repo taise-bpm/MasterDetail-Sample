@@ -144,7 +144,7 @@ namespace MasterDetail.Web.API.Controllers
         {
             var childList = await DomainContext
                 .ChildDomainService
-                .GetChildByMasterIdAsync(masterId);
+                .GetChildsByMasterIdAsync(masterId);
 
             if (childList == null)
                 return NotFound("Child not found.");
@@ -162,7 +162,7 @@ namespace MasterDetail.Web.API.Controllers
         {
             var childList = await DomainContext
                 .ChildDomainService
-                .GetChildByDetailIdAsync(detailId);
+                .GetChildsByDetailIdAsync(detailId);
 
             if (childList == null)
                 return NotFound("Child not found.");

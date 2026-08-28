@@ -135,7 +135,7 @@ namespace MasterDetail.Web.API.Controllers
         {
             var detailList = await DomainContext
                 .DetailDomainService
-                .GetDetailByMasterIdAsync(masterId);
+                .GetDetailsByMasterIdAsync(masterId);
 
             if (detailList == null)
                 return NotFound("Detail not found.");
