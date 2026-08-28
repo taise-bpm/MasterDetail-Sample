@@ -1,0 +1,31 @@
+{
+    "table": {
+        "name": "Master",
+        "name_lower": "master",
+        "name_plural": "Masters",
+        "name_plural_lower": "masters",
+        "id_field": "masterId",
+        "id_label": "Master ID",
+        "title_field": "name",
+        "description_field": "descritption",
+        "columns": [
+            {
+                "name": "name",
+                "label": "Name",
+                "type": "text",
+                "required": true,
+                "placeholder": "Enter name"
+            },
+            {
+                "name": "descritption",
+                "label": "Description",
+                "type": "textarea",
+                "required": false,
+                "placeholder": "Enter description"
+            }
+        ],
+        "parents": [],
+        "has_children": true,
+        "child_route_template": "`/godetail/master/${master.masterId}/details`"
+    }
+}

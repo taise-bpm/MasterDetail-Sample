@@ -1,0 +1,90 @@
+export const {{ table.name | string.downcase }}Scenarios = {
+    list: [
+        {{ for col in table.columns }}
+        {{ if col.type != "hidden" && col.type != "dynamic-select" }}
+        { name: '{{ col.name }}', label: '{{ col.label }}', type: '{{ col.type }}'{{ if col.required }}, required: true{{ end }}{{ if col.placeholder }}, placeholder: '{{ col.placeholder }}'{{ end }} }{{ if !for.last }},{{ end }}
+        {{ end }}
+        {{ end }}
+    ],
+    view: [
+        { name: '{{ table.id_field }}', label: '{{ table.id_label }}', type: 'number' },
+        {{ for col in table.columns }}
+        {{ if col.type != "hidden" }}
+        { name: '{{ col.name }}', label: '{{ col.label }}', type: '{{ col.type }}' }{{ if !for.last }},{{ end }}
+        {{ end }}
+        {{ end }}
+    ],
+    create: [
+        {{ for col in table.columns }}
+        {{ if col.type == "dynamic-select" }}
+        {
+            name: '{{ col.name }}',
+            label: '{{ col.label }}',
+            type: 'dynamic-select',
+            entity: '{{ col.entity }}',
+            {{ if col.required }}required: true,{{ end }}
+            {{ if col.placeholder }}placeholder: '{{ col.placeholder }}',{{ end }}
+            {{ if col.depends_on }}
+            dependsOn: {
+                {{ for dep in col.depends_on }}
+                {{ dep.key }}: '{{ dep.value }}'{{ if !for.last }},{{ end }}
+                {{ end }}
+            }
+            {{ end }}
+        }{{ if !for.last }},{{ end }}
+        {{ else if col.type == "select" || col.type == "radio" }}
+        {
+            name: '{{ col.name }}',
+            label: '{{ col.label }}',
+            type: '{{ col.type }}',
+            {{ if col.required }}required: true,{{ end }}
+            {{ if col.placeholder }}placeholder: '{{ col.placeholder }}',{{ end }}
+            options: [
+                {{ for opt in col.options }}
+                { label: '{{ opt.label }}', value: '{{ opt.value }}' }{{ if !for.last }},{{ end }}
+                {{ end }}
+            ]
+        }{{ if !for.last }},{{ end }}
+        {{ else }}
+        { name: '{{ col.name }}', label: '{{ col.label }}', type: '{{ col.type }}'{{ if col.required }}, required: true{{ end }}{{ if col.placeholder }}, placeholder: '{{ col.placeholder }}'{{ end }} }{{ if !for.last }},{{ end }}
+        {{ end }}
+        {{ end }}
+    ],
+    update: [
+        { name: '{{ table.id_field }}', label: '{{ table.id_label }}', type: 'hidden' },
+        {{ for col in table.columns }}
+        {{ if col.type == "dynamic-select" }}
+        {
+            name: '{{ col.name }}',
+            label: '{{ col.label }}',
+            type: 'dynamic-select',
+            entity: '{{ col.entity }}',
+            {{ if col.required }}required: true,{{ end }}
+            {{ if col.placeholder }}placeholder: '{{ col.placeholder }}',{{ end }}
+            {{ if col.depends_on }}
+            dependsOn: {
+                {{ for dep in col.depends_on }}
+                {{ dep.key }}: '{{ dep.value }}'{{ if !for.last }},{{ end }}
+                {{ end }}
+            }
+            {{ end }}
+        }{{ if !for.last }},{{ end }}
+        {{ else if col.type == "select" || col.type == "radio" }}
+        {
+            name: '{{ col.name }}',
+            label: '{{ col.label }}',
+            type: '{{ col.type }}',
+            {{ if col.required }}required: true,{{ end }}
+            {{ if col.placeholder }}placeholder: '{{ col.placeholder }}',{{ end }}
+            options: [
+                {{ for opt in col.options }}
+                { label: '{{ opt.label }}', value: '{{ opt.value }}' }{{ if !for.last }},{{ end }}
+                {{ end }}
+            ]
+        }{{ if !for.last }},{{ end }}
+        {{ else }}
+        { name: '{{ col.name }}', label: '{{ col.label }}', type: '{{ col.type }}'{{ if col.required }}, required: true{{ end }}{{ if col.placeholder }}, placeholder: '{{ col.placeholder }}'{{ end }} }{{ if !for.last }},{{ end }}
+        {{ end }}
+        {{ end }}
+    ]
+};

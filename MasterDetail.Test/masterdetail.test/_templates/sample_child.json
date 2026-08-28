@@ -1,0 +1,128 @@
+{
+    "table": {
+        "name": "Child",
+        "name_lower": "child",
+        "name_plural": "Children",
+        "name_plural_lower": "children",
+        "id_field": "childId",
+        "id_label": "Child ID",
+        "title_field": "name",
+        "description_field": "description",
+        "columns": [
+            {
+                "name": "name",
+                "label": "Name",
+                "type": "text",
+                "required": true,
+                "placeholder": "Enter name"
+            },
+            {
+                "name": "description",
+                "label": "Description",
+                "type": "textarea",
+                "required": false,
+                "placeholder": "Enter description"
+            },
+            {
+                "name": "status",
+                "label": "Status",
+                "type": "select",
+                "required": true,
+                "options": [
+                    {
+                        "label": "Active",
+                        "value": "active"
+                    },
+                    {
+                        "label": "Inactive",
+                        "value": "inactive"
+                    },
+                    {
+                        "label": "Pending",
+                        "value": "pending"
+                    }
+                ]
+            },
+            {
+                "name": "notificationPreference",
+                "label": "Notification Preference",
+                "type": "radio",
+                "required": true,
+                "options": [
+                    {
+                        "label": "Email",
+                        "value": "email"
+                    },
+                    {
+                        "label": "SMS",
+                        "value": "sms"
+                    },
+                    {
+                        "label": "Push",
+                        "value": "push"
+                    }
+                ]
+            },
+            {
+                "name": "termsAccepted",
+                "label": "I accept the terms and conditions",
+                "type": "checkbox",
+                "required": true
+            },
+            {
+                "name": "masterId",
+                "label": "Select Master",
+                "type": "dynamic-select",
+                "entity": "master",
+                "required": true,
+                "placeholder": "Choose a master record..."
+            },
+            {
+                "name": "detailId",
+                "label": "Select Detail",
+                "type": "dynamic-select",
+                "entity": "detail",
+                "required": true,
+                "placeholder": "Choose a dependent detail...",
+                "depends_on": [
+                    {
+                        "key": "masterId",
+                        "value": "masterId"
+                    }
+                ]
+            }
+        ],
+        "parents": [
+            {
+                "name": "Master",
+                "name_lower": "master",
+                "id_field": "masterId"
+            },
+            {
+                "name": "Detail",
+                "name_lower": "detail",
+                "id_field": "detailId"
+            }
+        ],
+        "direct_parent": {
+            "name_lower": "detail",
+            "title_field": "name"
+        },
+        "breadcrumbs": [
+            {
+                "label": "'Masters'",
+                "path": "'/godetail/masters'"
+            },
+            {
+                "label": "master?.name || 'Loading...'",
+                "path": "`/godetail/master/${masterId}/details`"
+            },
+            {
+                "label": "detail?.name || 'Loading...'",
+                "path": "`/godetail/master/${masterId}/detail/${detailId}/children`"
+            }
+        ],
+        "back_url": "`/godetail/master/${masterId}/details`",
+        "has_children": false
+    }
+}

@@ -1,0 +1,36 @@
+
+
+    @using MasterDetail.Common.Models
+    @model DetailViewModel
+
+    @{
+    
+          @Html.HiddenFor(m => m.ModifiedIP);
+        
+          @Html.HiddenFor(m => m.ModifiedOn);
+        
+          @Html.HiddenFor(m => m.ModifiedBy);
+        
+          @Html.HiddenFor(m => m.CreatedIP);
+        
+          @Html.HiddenFor(m => m.CreatedOn);
+        
+          @Html.HiddenFor(m => m.CreatedBy);
+        
+    }
+    <div class="form-label-group">
+                @Html.TextBoxFor(m => m.DetailId, new { @type = "text", @class = "form-control", @readonly = true })
+                @Html.LabelFor(m => m.DetailId, "DetailId")
+              </div>
+<div class="form-label-group">
+                @Html.TextBoxFor(m => m.MasterId, new { @type = "text", @class = "form-control" })
+                @Html.LabelFor(m => m.MasterId, "MasterId")
+              </div>
+<div class="form-label-group">
+                @Html.TextBoxFor(m => m.Name, new { @type = "text", @class = "form-control" })
+                @Html.LabelFor(m => m.Name, "Name")
+              </div>
+<div class="form-label-group">
+                @Html.TextBoxFor(m => m.Descritpion, new { @type = "text", @class = "form-control" })
+                @Html.LabelFor(m => m.Descritpion, "Descritpion")
+              </div>

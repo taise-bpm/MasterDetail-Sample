@@ -1,0 +1,76 @@
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import apiClient from '../api/apiClient';
+
+// --- Queries ---
+
+export const use{{ table.name_plural }} = ({{ if table.parents }}{{ for parent in table.parents }}{{ parent.id_field }}, {{ end }}{{ end }}search = '', reverse = false) => {
+    return useInfiniteQuery({
+        queryKey: ['{{ table.name_plural_lower }}', {{ if table.parents }}{{ for parent in table.parents }}{{ parent.id_field }}, {{ end }}{{ end }}{ search, reverse }],
+        queryFn: async ({ pageParam = 1 }) => {
+            const { data } = await apiClient.get(
+                `/{{ table.name }}/GetAllPaged{{ if table.parents }}{{ for parent in table.parents }}/${ {{ parent.id_field }} }{{ end }}{{ end }}?page=${pageParam}&limit=15${search ? `&search=${search}` : ''}&reverse=${reverse}`
+            );
+            return data;
+        },
+        getNextPageParam: (lastPage, allPages) => {
+            const nextPage = allPages.length + 1;
+            return nextPage <= (lastPage.totalPages || 1) ? nextPage : undefined;
+        },
+        initialPageParam: 1,
+        {{ if table.parents }}
+        enabled: {{ for parent in table.parents }}!!{{ parent.id_field }}{{ if !for.last }} && {{ end }}{{ end }}, // Only fetch when parent IDs are provided
+        {{ end }}
+    });
+};
+
+export const use{{ table.name }}ById = ({{ table.id_field }}) => {
+    return useQuery({
+        queryKey: ['{{ table.name_plural_lower }}', {{ table.id_field }}],
+        queryFn: async () => {
+            const { data } = await apiClient.get(`/{{ table.name }}/getbyid/${ {{ table.id_field }} }`);
+            return data;
+        },
+        enabled: !!{{ table.id_field }},
+    });
+};
+
+// --- Mutations ---
+
+export const useCreate{{ table.name }} = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (new{{ table.name }}) => {
+            const { data } = await apiClient.post('{{ table.name }}/create', new{{ table.name }});
+            return data;
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['{{ table.name_plural_lower }}'{{ if table.parents }}{{ for parent in table.parents }}, String(variables.{{ parent.id_field }}){{ end }}{{ end }}] });
+        },
+    });
+};
+
+export const useUpdate{{ table.name }} = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ id, updated{{ table.name }} }) => {
+            const { data } = await apiClient.put(`{{ table.name }}/update`, updated{{ table.name }});
+            return data;
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['{{ table.name_plural_lower }}'{{ if table.parents }}{{ for parent in table.parents }}, String(variables.updated{{ table.name }}.{{ parent.id_field }}){{ end }}{{ end }}] });
+        },
+    });
+};
+
+export const useDelete{{ table.name }} = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            const { data } = await apiClient.delete(`{{ table.name }}/delete/${id}`);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['{{ table.name_plural_lower }}'] });
+        },
+    });
+};

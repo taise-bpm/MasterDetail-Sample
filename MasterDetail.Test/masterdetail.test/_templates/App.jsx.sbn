@@ -1,0 +1,38 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import React from 'react';
+
+{{ for table in tables }}
+const {{ table.name }}List = React.lazy(() => import('./pages/godetail_crud/{{ table.name }}List'));
+{{ end }}
+const ProDetailCrud = React.lazy(() => import('./pages/prodetail_crud/ProDetailCrud'));
+const FormShowcase = React.lazy(() => import('./pages/FormShowcase'));
+
+function App() {
+  return (
+    <BrowserRouter>
+      <React.Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="{{ default_route }}" replace />} />
+
+            {/* Generated Go Detail Classic CRUD Routes */}
+            {{ for table in tables }}
+            <Route path="{{ table.route_path }}" element={<{{ table.name }}List />} />
+            {{ end }}
+
+            {/* Pro Detail Single Window Route */}
+            <Route path="prodetail" element={<ProDetailCrud />} />
+
+            {/* Component Dev Route */}
+            <Route path="form-showcase" element={<FormShowcase />} />
+
+            <Route path="*" element={<div className="text-center mt-20 text-gray-500">Page Not Found</div>} />
+          </Route>
+        </Routes>
+      </React.Suspense>
+    </BrowserRouter>
+  );
+}
+
+export default App;

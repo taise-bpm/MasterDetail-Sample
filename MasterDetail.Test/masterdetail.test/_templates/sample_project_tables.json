@@ -1,0 +1,97 @@
+{
+    "tables": [
+        {
+            "name": "Master",
+            "name_lower": "master",
+            "name_plural": "Masters",
+            "name_plural_lower": "masters",
+            "id_field": "masterId",
+            "title_field": "name",
+            "route_path": "godetail/masters",
+            "parents": []
+        },
+        {
+            "name": "Detail",
+            "name_lower": "detail",
+            "name_plural": "Details",
+            "name_plural_lower": "details",
+            "id_field": "detailId",
+            "title_field": "name",
+            "route_path": "godetail/master/:masterId/details",
+            "parents": [
+                {
+                    "id_field": "masterId"
+                }
+            ]
+        },
+        {
+            "name": "Child",
+            "name_lower": "child",
+            "name_plural": "Children",
+            "name_plural_lower": "children",
+            "id_field": "childId",
+            "title_field": "name",
+            "route_path": "godetail/master/:masterId/detail/:detailId/children",
+            "parents": [
+                {
+                    "id_field": "masterId"
+                },
+                {
+                    "id_field": "detailId"
+                }
+            ]
+        },
+        {
+            "name": "Country",
+            "name_lower": "country",
+            "name_plural": "Countries",
+            "name_plural_lower": "countries",
+            "id_field": "countryId",
+            "title_field": "countryName",
+            "parents": []
+        },
+        {
+            "name": "State",
+            "name_lower": "state",
+            "name_plural": "States",
+            "name_plural_lower": "states",
+            "id_field": "stateId",
+            "title_field": "stateName",
+            "parents": [
+                {
+                    "id_field": "countryId"
+                }
+            ]
+        }
+    ],
+    "default_route": "/godetail/masters",
+    "sidebar": {
+        "icons": [
+            "Database",
+            "Home",
+            "List"
+        ],
+        "items": [
+            {
+                "name": "Dashboard",
+                "path": "/",
+                "icon": "Home"
+            },
+            {
+                "name": "Go Detail View",
+                "path": "/godetail/masters",
+                "icon": "Database"
+            },
+            {
+                "name": "Pro Detail View",
+                "path": "/prodetail",
+                "icon": "List"
+            },
+            {
+                "name": "Showcase",
+                "path": "/form-showcase",
+                "icon": "List"
+            }
+        ]
+    }
+}

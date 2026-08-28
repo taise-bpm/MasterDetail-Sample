@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+import { useNavigate{{ if table.parents }}, useParams{{ end }} } from 'react-router-dom';
+import { use{{ table.name_plural }}, useCreate{{ table.name }}, useUpdate{{ table.name }}, useDelete{{ table.name }} } from '../../hooks/use{{ table.name }}Hooks';
+{{ if table.parents }}
+{{ for parent in table.parents }}
+import { use{{ parent.name }}ById } from '../../hooks/use{{ parent.name }}Hooks';
+{{ end }}
+{{ end }}
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
+import { useDebounce } from '../../hooks/useDebounce';
+import Modal from '../../components/Modal';
+import RecordCard from '../../components/RecordCard';
+import RecordForm from '../../components/RecordForm';
+import RecordView from '../../components/RecordView';
+import CrudListLayout from '../../components/CrudListLayout';
+import RecordTable from '../../components/RecordTable';
+import { {{ table.name | string.downcase }}Scenarios } from '../../constants/{{ table.name | string.downcase }}Fields';
+
+export default function {{ table.name }}List() {
+{{ if table.parents }}
+    const { {{ for parent in table.parents }}{{ parent.id_field }}{{ if !for.last }}, {{ end }}{{ end }} } = useParams();
+{{ end }}
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editing{{ table.name }}, setEditing{{ table.name }}] = useState(null);
+    const [viewingRecord, setViewingRecord] = useState(null);
+
+    // --- FILTER STATE ---
+    const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 500);
+    const [reverse, setReverse] = useState(false);
+
+    // --- TANSTACK HOOKS ---
+{{ if table.parents }}
+{{ for parent in table.parents }}
+    const { data: {{ parent.name_lower }}Data } = use{{ parent.name }}ById({{ parent.id_field }});
+    const {{ parent.name_lower }} = {{ parent.name_lower }}Data;
+{{ end }}
+{{ end }}
+
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status
+    } = use{{ table.name_plural }}({{ if table.parents }}{{ for parent in table.parents }}{{ parent.id_field }}, {{ end }}{{ end }}debouncedSearch, reverse);
+
+    const create{{ table.name }} = useCreate{{ table.name }}();
+    const update{{ table.name }} = useUpdate{{ table.name }}();
+    const delete{{ table.name }} = useDelete{{ table.name }}();
+
+    const {{ table.name_plural_lower }} = data ? data.pages.flatMap(page => page.{{ table.name_plural_lower }} || page.{{ table.name | string.downcase }}s || page.{{ table.name | string.downcase }}List || page.content || page.data || []) : [];
+
+    // --- INFINITE SCROLL ---
+    const lastElementRef = useInfiniteScroll(isFetchingNextPage, hasNextPage, fetchNextPage);
+
+    const handleOpenModal = ({{ table.name_lower }} = null) => {
+        setEditing{{ table.name }}({{ table.name_lower }});
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditing{{ table.name }}(null);
+    };
+
+    const handleSave = async (formData) => {
+        try {
+            const payload = {
+                {{ for col in table.columns }}
+                {{ col.name }}: formData.{{ col.name }},
+                {{ end }}
+                {{ if table.parents }}
+                {{ for parent in table.parents }}
+                {{ parent.id_field }}: parseInt({{ parent.id_field }}){{ if !for.last }},{{ end }}
+                {{ end }}
+                {{ end }}
+            };
+
+            if (editing{{ table.name }}) {
+                payload.{{ table.id_field }} = editing{{ table.name }}.{{ table.id_field }};
+                await update{{ table.name }}.mutateAsync({ id: editing{{ table.name }}.{{ table.id_field }}, updated{{ table.name }}: payload });
+            } else {
+                await create{{ table.name }}.mutateAsync(payload);
+            }
+            handleCloseModal();
+        } catch (error) {
+            console.error('Failed to save {{ table.name_lower }}:', error);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this {{ table.name_lower }}?')) return;
+        try {
+            await delete{{ table.name }}.mutateAsync(id);
+        } catch (error) {
+            console.error('Failed to delete {{ table.name_lower }}:', error);
+        }
+    };
+
+{{ if table.parents }}
+    const breadcrumbs = [
+        {{ for breadcrumb in table.breadcrumbs }}
+        { label: {{ breadcrumb.label }}, path: {{ breadcrumb.path }} },
+        {{ end }}
+        { label: '{{ table.name_plural }}', path: null }
+    ];
+{{ end }}
+
+    return (
+        <>
+            <CrudListLayout
+                {{ if table.parents }}
+                breadcrumbs={breadcrumbs}
+                backUrl={{ table.back_url }}
+                title="{{ table.name_plural }}"
+                subtitle={`Manage {{ table.name_plural_lower }} for ${ {{ table.direct_parent.name_lower }}?.{{ table.direct_parent.title_field }} || 'this record'}`}
+                {{ else }}
+                title="{{ table.name_plural }}"
+                subtitle="Manage your {{ table.name_lower }} records."
+                {{ end }}
+                onAdd={() => handleOpenModal()}
+                addLabel="Add {{ table.name }}"
+                search={search}
+                onSearchChange={setSearch}
+                reverse={reverse}
+                onReverseToggle={() => setReverse(!reverse)}
+                status={status}
+                isFetchingNextPage={isFetchingNextPage}
+                itemsCount={ {{ table.name_plural_lower }}.length }
+                loadingMessage="Loading {{ table.name_lower }} records..."
+                errorMessage="Failed to load {{ table.name_lower }} records. Please try again."
+                emptyMessage="No {{ table.name_lower }} records found{{ if table.parents }} for this {{ table.direct_parent.name_lower }}{{ end }}. Click 'Add {{ table.name }}' to create one."
+            >
+                {(viewMode) => viewMode === 'card' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        { {{ table.name_plural_lower }}.map(({{ table.name_lower }}, index) => (
+                            <div key={ {{ table.name_lower }}.{{ table.id_field }} } ref={ {{ table.name_plural_lower }}.length === index + 1 ? lastElementRef : null}>
+                                <RecordCard
+                                    data={ {{ table.name_lower }} }
+                                    fields={ {{ table.name | string.downcase }}Scenarios.list}
+                                    title={ {{ table.name_lower }}.{{ table.title_field }} }
+                                    description={ {{ table.name_lower }}.{{ table.description_field }} }
+                                    onEdit={() => handleOpenModal({{ table.name_lower }})}
+                                    onDelete={() => handleDelete({{ table.name_lower }}.{{ table.id_field }})}
+                                    {{ if table.has_children }}
+                                    onClickView={() => navigate({{ table.child_route_template }})}
+                                    viewLabel="View Children"
+                                    {{ end }}
+                                    onViewDetail={() => setViewingRecord({{ table.name_lower }})}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <RecordTable
+                        data={ {{ table.name_plural_lower }} }
+                        fields={ {{ table.name | string.downcase }}Scenarios.list}
+                        idField="{{ table.id_field }}"
+                        onEdit={({{ table.name_lower }}) => handleOpenModal({{ table.name_lower }})}
+                        onDelete={(id) => handleDelete(id)}
+                        {{ if table.has_children }}
+                        onClickView={({{ table.name_lower }}) => navigate({{ table.child_route_template }})}
+                        viewLabel="View Children"
+                        {{ end }}
+                        onViewDetail={({{ table.name_lower }}) => setViewingRecord({{ table.name_lower }})}
+                        lastElementRef={lastElementRef}
+                    />
+                )}
+            </CrudListLayout>
+
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                title={editing{{ table.name }} ? "Edit {{ table.name }}" : "Create {{ table.name }}"}
+            >
+                <RecordForm
+                    fields={editing{{ table.name }} ? {{ table.name | string.downcase }}Scenarios.update : {{ table.name | string.downcase }}Scenarios.create}
+                    initialData={editing{{ table.name }} ? { {{ for col in table.columns }}{{ col.name }}: editing{{ table.name }}.{{ col.name }}{{ if !for.last }}, {{ end }}{{ end }} } : null}
+                    onSubmit={handleSave}
+                    onCancel={handleCloseModal}
+                    submitLabel={editing{{ table.name }} ? "Save Changes" : "Create {{ table.name }}"}
+                />
+            </Modal>
+
+            {/* View Modal */}
+            <Modal
+                isOpen={!!viewingRecord}
+                onClose={() => setViewingRecord(null)}
+                title="View {{ table.name }} Record"
+            >
+                <RecordView data={viewingRecord} fields={ {{ table.name | string.downcase }}Scenarios.view} />
+            </Modal>
+        </>
+    );
+}

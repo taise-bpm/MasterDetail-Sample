@@ -1,0 +1,55 @@
+import React from 'react';
+{{ for table in tables }}
+import { use{{ table.name_plural }} } from '../hooks/use{{ table.name }}Hooks';
+{{ end }}
+
+export default function DynamicSelect({ field, value, onChange, formData }) {
+    {{ for table in tables }}
+    if (field.entity === '{{ table.name_lower }}') {
+        {{ if table.parents && table.parents.length > 0 }}
+        {{ for parent in table.parents }}
+        const {{ parent.id_field }} = formData[field.dependsOn?.{{ parent.id_field }}];
+        {{ end }}
+        return <{{ table.name }}Select field={field} value={value} onChange={onChange} {{ for parent in table.parents }}{{ parent.id_field }}={ {{ parent.id_field }} }{{ if !for.last }} {{ end }}{{ end }} />;
+        {{ else }}
+        return <{{ table.name }}Select field={field} value={value} onChange={onChange} />;
+        {{ end }}
+    }
+    {{ end }}
+    return <div className="text-red-500 text-sm py-2">Unknown entity type: {field.entity}</div>;
+}
+
+{{ for table in tables }}
+{{ if table.parents && table.parents.length > 0 }}
+function {{ table.name }}Select({ field, value, onChange, {{ for parent in table.parents }}{{ parent.id_field }}{{ if !for.last }}, {{ end }}{{ end }} }) {
+    const { data, isLoading } = use{{ table.name_plural }}({{ for parent in table.parents }}{{ parent.id_field }}, {{ end }}'', false);
+{{ else }}
+function {{ table.name }}Select({ field, value, onChange }) {
+    const { data, isLoading } = use{{ table.name_plural }}('', false);
+{{ end }}
+    const options = data ? data.pages.flatMap(page => page.{{ table.name_plural_lower }} || page.content || page.data || []) : [];
+
+    {{ if table.parents && table.parents.length > 0 }}
+    // Disable if missing dependencies or loading
+    const isDisabled = {{ for parent in table.parents }}!{{ parent.id_field }} || {{ end }}isLoading;
+    {{ else }}
+    const isDisabled = isLoading;
+    {{ end }}
+
+    return (
+        <select
+            required={field.required}
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            className={`w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors appearance-none ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isDisabled}
+        >
+            <option value="" disabled>{field.placeholder || `Select ${field.label}`}</option>
+            {options.map(opt => (
+                <option key={opt.{{ table.id_field }}} value={opt.{{ table.id_field }}}>{opt.{{ table.title_field }}}</option>
+            ))}
+        </select>
+    );
+}
+
+{{ end }}

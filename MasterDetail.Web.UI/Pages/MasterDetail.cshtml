@@ -1,0 +1,159 @@
+
+    @page
+    @model MasterDetailModel
+    @{
+    ViewBag.Title = "Master Detail";
+    
+        Layout = "~/Pages/Shared/_Layout.cshtml";
+      ViewBag.Breadcrumb = @"<li class='active'><i class='fa fa-home pr-10'></i><a href='/Home/'>Home</a></li> 
+        <li>Master Detail</li>";
+    ViewBag.HeadTitle = "Master Detail";
+    }
+
+    @section Styles{
+	    <link rel="stylesheet" href="~/css/FloatingLabel.css" />
+    }
+
+    <div class="container">
+<br />
+<form asp-area="" asp-page="MasterDetail" method="post"><div class="form-label-group">
+                      @Html.TextBoxFor(m => m.Master.MasterId, new { @type = "text", @class = "form-control", @readonly = true })
+                      @Html.LabelFor(m => m.Master.MasterId, "MasterId")
+                    </div>
+<div class="form-label-group">
+                      @Html.TextBoxFor(m => m.Master.Name, new { @type = "text", @class = "form-control" })
+                      @Html.LabelFor(m => m.Master.Name, "Name")
+                    </div>
+<div class="form-label-group">
+                      @Html.TextBoxFor(m => m.Master.Descritption, new { @type = "text", @class = "form-control" })
+                      @Html.LabelFor(m => m.Master.Descritption, "Descritption")
+                    </div>
+
+                @Html.HiddenFor(m => m.Master.CreatedBy)
+              
+                @Html.HiddenFor(m => m.Master.CreatedOn)
+              
+                @Html.HiddenFor(m => m.Master.CreatedIP)
+              
+                @Html.HiddenFor(m => m.Master.ModifiedBy)
+              
+                @Html.HiddenFor(m => m.Master.ModifiedOn)
+              
+                @Html.HiddenFor(m => m.Master.ModifiedIP)
+              <button type="submit">Save</button></form>
+            @if(Model.Master?.MasterId> 0)
+          {
+          <table class="display cell-border" id="datatable" cellspacing="0" style="width: 100%;">
+<thead>
+<tr>
+<td>Detail Id</td><td>Name</td><td>Descritpion</td><td align="center"><button class="btn-light btn-sm" id="addDetail" value="@Model.Master.MasterId">
+                      Add Detail</button></td>
+</tr>
+</thead>
+<tbody>
+
+              @foreach (var item in Model.Details)
+              {
+              <tr>
+<td>
+                        @item.DetailId</td>
+<td>
+                        @item.Name</td>
+<td>
+                        @item.Descritpion</td>
+<td align="center">
+<a asp-area="" asp-page="MasterDetail" asp-page-handler="EditPartial" asp-route-DetailId="@item.DetailId" class="editItemLink" style="color: orange">
+                        Edit
+                      </a></td>
+</tr>
+
+              }
+            </tbody>
+</table>
+
+          }
+          else
+          {
+              <div class="card"><p>Master not created! Please save first and add Detail</p></div>
+          }
+          </div><div class="modal" tabindex="-1" role="dialog" id="addDetailModal"><div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#fafafa;">
+<p>
+              Add Detail</p>
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+</div>
+<form method="post" asp-area="" asp-page="MasterDetail" asp-page-handler="AddDetail" name="addDetailForm" id="addDetailForm">
+            
+          
+            @Html.ValidationSummary(true)
+
+            <div class="modal-body">
+<div class="alert alert-success collapse successAlert" role="alert">
+<label class="successMessage">Detail was created successfully.
+                </label>
+</div>
+<div class="alert alert-danger collapse errorAlert" role="alert">
+<label class="errorMessage">
+                  Error creating Detail. Please try again. If error persists please contact site administrator.
+                </label>
+</div>
+<div id="addDetailBody"> </div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" id="createDetailDetail">
+                Add
+              </button>
+<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="editDetailModal"><div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#fafafa;">
+<p>
+              Edit Detail Item
+            </p>
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+</div>
+<form method="post" asp-area="" asp-page="MasterDetail" asp-page-handler="EditDetail" name="editDetailForm" id="editDetailForm">
+            
+            @Html.ValidationSummary(true)
+            <div class="modal-body">
+<div class="alert alert-success collapse successAlert" role="alert">
+<label class="successMessage">Detail was saved successfully.
+                </label>
+</div>
+<div class="alert alert-danger collapse errorAlert" role="alert"><label class="errorMessage">
+                  Error saving Detail. Please try again. If error persists please contact site administrator.
+                </label>
+</div>
+<div id="editDetailBody"> </div>
+</div><div class="modal-footer">
+<button class="btn btn-primary" id="updateDetailDetail">
+                Save
+              </button>
+<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+    @section Scripts {
+    <script type="text/javascript" src="~/js/MasterDetail.js"> </script>
+<script type="text/javascript" src="~/js/jquery.loadmask.js"> </script><script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                columnDefs: [{
+                    "targets": 3,
+                    "orderable": false
+                }]
+            });
+        });
+    </script>
+
+    }
+  

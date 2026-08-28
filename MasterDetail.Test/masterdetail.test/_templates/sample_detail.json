@@ -1,0 +1,52 @@
+{
+    "table": {
+        "name": "Detail",
+        "name_lower": "detail",
+        "name_plural": "Details",
+        "name_plural_lower": "details",
+        "id_field": "detailId",
+        "id_label": "Detail ID",
+        "title_field": "name",
+        "description_field": "descritpion",
+        "columns": [
+            {
+                "name": "name",
+                "label": "Name",
+                "type": "text",
+                "required": true,
+                "placeholder": "Enter name"
+            },
+            {
+                "name": "descritpion",
+                "label": "Description",
+                "type": "textarea",
+                "required": false,
+                "placeholder": "Enter description"
+            }
+        ],
+        "parents": [
+            {
+                "name": "Master",
+                "name_lower": "master",
+                "id_field": "masterId"
+            }
+        ],
+        "direct_parent": {
+            "name_lower": "master",
+            "title_field": "name"
+        },
+        "breadcrumbs": [
+            {
+                "label": "'Masters'",
+                "path": "'/godetail/masters'"
+            },
+            {
+                "label": "master?.name || 'Loading...'",
+                "path": "`/godetail/master/${masterId}/details`"
+            }
+        ],
+        "back_url": "'/godetail/masters'",
+        "has_children": true,
+        "child_route_template": "`/godetail/master/${masterId}/detail/${detail.detailId}/children`"
+    }
+}

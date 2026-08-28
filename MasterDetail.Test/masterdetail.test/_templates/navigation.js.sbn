@@ -1,0 +1,7 @@
+import { {{ sidebar.icons | array.join ", " }} } from 'lucide-react';
+
+export const navItems = [
+    {{ for item in sidebar.items }}
+    { name: '{{ item.name }}', path: '{{ item.path }}', icon: {{ item.icon }} }{{ if !for.last }},{{ end }}
+    {{ end }}
+];
