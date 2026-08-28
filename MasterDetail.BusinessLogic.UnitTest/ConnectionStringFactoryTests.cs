@@ -1,4 +1,3 @@
-
 using Microsoft.Extensions.Configuration;
 using MasterDetail.BusinessLogic;
 using Moq;
@@ -64,5 +63,3 @@ namespace MasterDetail.BusinessLogic.UnitTest
         }
     }
 }
-
-  

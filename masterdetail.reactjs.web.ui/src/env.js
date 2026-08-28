@@ -1,5 +1,5 @@
 const ENV = {
-    API_ROOT: 'https://localhost:7050/api'
+    API_ROOT: 'https://localhost:63293/api'
 };
 
 export default ENV;

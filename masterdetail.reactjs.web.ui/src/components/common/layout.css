@@ -1,0 +1,56 @@
+:root {
+  --navbar-height: 56px;
+}
+
+.app-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--navbar-height);
+  padding: 0 24px;
+  background-color: var(--primary-color);
+  color: white;
+  box-sizing: border-box;
+}
+
+.app-navbar__brand {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+}
+
+.app-navbar__links {
+  display: flex;
+  gap: 20px;
+}
+
+.app-navbar__links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.85;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.app-navbar__links a:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.app-navbar__links a.active {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.app-content {
+  height: calc(100vh - var(--navbar-height));
+  overflow: auto;
+}
+
+/* ParentChildLayout sets height:100vh internally for its own sidebar scroll;
+   pin it to the remaining viewport instead so it doesn't run under the navbar. */
+.app-content .master-detail-layout,
+.app-content .master-table-container {
+  height: 100%;
+}
