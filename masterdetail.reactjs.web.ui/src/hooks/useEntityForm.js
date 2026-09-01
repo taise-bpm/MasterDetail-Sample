@@ -1,8 +1,9 @@
 import { useState } from 'react';
 
 const isFieldEmpty = (field, value) => {
+  if (field.type === 'checkbox') return field.required ? !value : false;
   if (field.type === 'number') {
-    return value === '' || value === null || value === undefined || Number.isNaN(Number(value)) || Number(value) <= 0;
+    return value === '' || value === null || value === undefined || Number.isNaN(Number(value));
   }
   return !String(value ?? '').trim();
 };
@@ -19,8 +20,21 @@ const useEntityForm = (fields, initialValues) => {
     setErrors({});
   };
 
-  const handleChange = (e) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  // Every control (see components/common/controls) calls this the same way:
+  // handleChange(fieldName, newValue) - already unwrapped from whatever
+  // native DOM event produced it, so this never needs to know which HTML
+  // element a field renders as.
+  const handleChange = (name, value) => {
+    setValues((prev) => {
+      const next = { ...prev, [name]: value };
+      // A field whose ForeignKeySelect options depend on the one that just
+      // changed may now be showing a stale, no-longer-valid choice - clear it
+      // so the user re-picks from the refetched (narrower) option list.
+      fields.forEach((field) => {
+        if (field.foreignKey?.dependsOn === name) next[field.name] = '';
+      });
+      return next;
+    });
   };
 
   const validate = () => {

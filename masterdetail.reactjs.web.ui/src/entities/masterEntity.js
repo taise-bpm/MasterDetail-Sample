@@ -15,4 +15,11 @@ export const masterEntity = {
   ],
   // Which fields an EntityTileList shows as a tile's title/subtitle.
   tileFields: { title: 'name', subtitle: 'descritption' },
+  // DataTable row actions drilling down from this master. Child carries
+  // masterId as a foreign key too (not just via Detail), so a master links
+  // straight to both its details and its children.
+  linkForwards: [
+    { label: 'View Details', to: (record) => `/detail?masterId=${record.masterId}` },
+    { label: 'View Children', to: (record) => `/child?masterId=${record.masterId}` },
+  ],
 };

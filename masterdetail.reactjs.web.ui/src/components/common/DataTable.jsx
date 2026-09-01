@@ -1,6 +1,12 @@
+import { Link } from 'react-router-dom';
+import { formatFieldValue } from '../../utils/formatFieldValue';
+
 // Generic paginated grid body: one column per `columns` entry plus a fixed
-// View/Edit/Delete actions column. Shared by Detail and Child.
-const DataTable = ({ columns, rows, rowKey, highlightedRowId, onView, onEdit, onDelete }) => (
+// View/Edit/Delete actions column, and zero or more extra navigation links
+// (e.g. Master rows link to both /detail?masterId=... and /child?masterId=...
+// since Child carries masterId as a foreign key too). Shared by every
+// EntityGridPage / EntityChildGrid.
+const DataTable = ({ columns, rows, rowKey, highlightedRowId, onView, onEdit, onDelete, linkForwards = [] }) => (
   <div className="custom-table-container">
     <table className="custom-table">
       <thead>
@@ -15,7 +21,7 @@ const DataTable = ({ columns, rows, rowKey, highlightedRowId, onView, onEdit, on
         {rows.map((row) => (
           <tr key={row[rowKey]} className={highlightedRowId === row[rowKey] ? 'highlight-row' : ''}>
             {columns.map((column) => (
-              <td key={column.name}>{row[column.name]}</td>
+              <td key={column.name}>{formatFieldValue(column, row[column.name])}</td>
             ))}
             <td className="sticky-column">
               <button className="custom-button info" onClick={() => onView(row)}>
@@ -27,6 +33,11 @@ const DataTable = ({ columns, rows, rowKey, highlightedRowId, onView, onEdit, on
               <button className="custom-button danger" onClick={() => onDelete(row)}>
                 Delete
               </button>
+              {linkForwards.map((link) => (
+                <Link key={link.label} className="custom-button primary" to={link.to(row)}>
+                  {link.label}
+                </Link>
+              ))}
             </td>
           </tr>
         ))}

@@ -1,3 +1,5 @@
+import { formatFieldValue } from '../../utils/formatFieldValue';
+
 // Generic read-only "View" modal: labeled field list driven by config,
 // shared by Master, Detail and Child instead of three copy-pasted modals.
 const RecordViewer = ({ title, fields, record, onClose }) => (
@@ -11,7 +13,7 @@ const RecordViewer = ({ title, fields, record, onClose }) => (
       <hr />
       {fields.map((field) => (
         <p key={field.name}>
-          <strong>{field.label}:</strong> {record?.[field.name]}
+          <strong>{field.label}:</strong> {formatFieldValue(field, record?.[field.name])}
         </p>
       ))}
       <hr />

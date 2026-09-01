@@ -14,7 +14,7 @@ const PAGE_SIZE = 20;
 // delete - the "parent" pane of any Parent -> Child layout. Master's sidebar
 // and Detail's (when Detail is the parent, e.g. a Detail -> Child view) are
 // both just this component pointed at a different entity.
-const EntityTileList = ({ entity, selectedId, onSelect }) => {
+const EntityTileList = ({ entity, selectedId, onSelect, listFilters = {} }) => {
   const { idField, label, api, fields, emptyRecord, tileFields } = entity;
   const infoFields = [{ name: idField, label: `${label} Id` }, ...fields];
 
@@ -44,7 +44,7 @@ const EntityTileList = ({ entity, selectedId, onSelect }) => {
 
   const loadRecords = async (pageToLoad, search = '') => {
     try {
-      const { items } = await api.list({ page: pageToLoad, limit: PAGE_SIZE, search, reverse: true });
+      const { items } = await api.list({ page: pageToLoad, limit: PAGE_SIZE, search, reverse: true, ...listFilters });
       if (items.length > 0) {
         setRecords((prev) => (pageToLoad === 1 ? items : [...prev, ...items]));
       } else {
@@ -56,16 +56,21 @@ const EntityTileList = ({ entity, selectedId, onSelect }) => {
     }
   };
 
+  // Stringified so a caller passing a fresh `{ masterId: 5 }` literal every
+  // render still only reloads when the actual filter values change.
+  const listFiltersKey = JSON.stringify(listFilters);
+
   useEffect(() => {
     setHasMore(true);
+    setPage(1);
     loadRecords(1, searchQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  }, [searchQuery, listFiltersKey]);
 
   useEffect(() => {
     if (page > 1) loadRecords(page, searchQuery);
-    // Intentionally reacts only to `page`: search changes are handled by the effect above,
-    // which already resets to page 1.
+    // Intentionally reacts only to `page`: search/filter changes are handled by the effect
+    // above, which already resets to page 1.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
@@ -90,7 +95,9 @@ const EntityTileList = ({ entity, selectedId, onSelect }) => {
   };
 
   const openCreateModal = () => {
-    reset(emptyRecord);
+    // Pre-fill (but don't lock) any field a `listFilters` value matches - e.g.
+    // creating a Detail while viewing "?masterId=5" starts pointed at master 5.
+    reset({ ...emptyRecord, ...listFilters });
     setModalType('create');
   };
 

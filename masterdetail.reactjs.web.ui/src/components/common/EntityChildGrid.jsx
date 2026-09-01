@@ -4,6 +4,7 @@ import useEntityForm from '../../hooks/useEntityForm';
 import useCrudMutations from '../../hooks/useCrudMutations';
 import usePagedList from '../../hooks/usePagedList';
 import { resolveFormFields } from '../../entities/fieldUtils';
+import Breadcrumbs from './Breadcrumbs';
 import Toast from './Toast';
 import DataTable from './DataTable';
 import Pagination from './Pagination';
@@ -25,7 +26,7 @@ const EntityChildGrid = ({
   parentDescriptionField,
   noParentMessage,
 }) => {
-  const { idField, label, api, fields, emptyRecord, pluralLabel = `${entity.label}s` } = entity;
+  const { idField, label, api, fields, emptyRecord, linkForwards, pluralLabel = `${entity.label}s` } = entity;
   const columns = [{ name: idField, label: `${label} Id` }, ...fields];
 
   const [modalType, setModalType] = useState(null); // 'create', 'read', 'update', 'delete'
@@ -101,9 +102,7 @@ const EntityChildGrid = ({
 
       {parent && (
         <div className="detail-table">
-          <div className="breadcrumbs">
-            <span>Home</span> &gt; <span>{parent[parentLabelField]}</span>
-          </div>
+          <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: parent[parentLabelField] }]} />
           <h3>
             {pluralLabel} for {parent[parentLabelField]}
           </h3>
@@ -130,6 +129,7 @@ const EntityChildGrid = ({
               rows={items}
               rowKey={idField}
               highlightedRowId={highlightedRowId}
+              linkForwards={linkForwards}
               onView={(record) => {
                 setSelectedRecord(record);
                 setModalType('read');

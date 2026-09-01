@@ -296,12 +296,14 @@
 }
 
 .custom-button {
+    display: inline-block;
     padding: 4px 7px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin: 1px;
     font-size: 12px;
+    text-decoration: none; /* so an <a>/Link used as a button matches <button> styling */
 }
 
 .custom-button.primary {
@@ -752,4 +754,120 @@
     left: 5px;
     font-size: 12px;
     color: var(--primary-color);
+}
+
+/* A <select> (ForeignKeySelect) has no placeholder text to hide/reveal like an
+   input does, so its label is simply pinned in the floated-up position instead
+   of trying to reuse the :placeholder-shown trick. */
+.floating-label select {
+    width: 100%;
+    padding: 10px 10px 10px 5px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    outline: none;
+    background: white;
+}
+
+.floating-label select ~ label {
+    position: absolute;
+    top: -20px;
+    left: 5px;
+    font-size: 12px;
+    color: var(--primary-color);
+    pointer-events: none;
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    margin: 10px 0 15px;
+}
+
+.filter-bar__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.filter-bar__item label {
+    color: var(--count-text-color);
+}
+
+.filter-bar__item select {
+    padding: 6px 8px;
+    border: 1px solid var(--search-border-color);
+    border-radius: 4px;
+    background-color: var(--search-bg-color);
+    min-width: 200px;
+}
+
+/* TextAreaControl: same floating-label mechanics as an input (textarea also
+   supports :placeholder-shown), just sized for multiple lines. */
+.floating-label textarea {
+    width: calc(100% - 20px);
+    padding: 10px 10px 10px 5px;
+    font-size: 16px;
+    font-family: inherit;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    outline: none;
+    background: none;
+    resize: vertical;
+}
+
+.floating-label textarea::placeholder {
+    color: transparent;
+}
+
+.floating-label textarea:focus::placeholder {
+    color: var(--placeholder-color);
+}
+
+.floating-label textarea:focus ~ label,
+.floating-label textarea:not(:placeholder-shown) ~ label {
+    top: -20px;
+    left: 5px;
+    font-size: 12px;
+    color: var(--primary-color);
+}
+
+/* CheckboxControl / RadioGroupControl: rendered as "control + its own inline
+   label" (see INLINE_LABEL_TYPES) rather than the floating-label pattern -
+   a label floating above a checkbox or radio group reads oddly. */
+.inline-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkbox-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.checkbox-control input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.radio-group-control {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 16px;
 }

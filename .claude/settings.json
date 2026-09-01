@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//tmp/**)",
+      "Bash(curl -sk -o /dev/null -w \"%{http_code}\\\\n\" https://localhost:63293/api/Master/GetAllPaged)",
+      "Bash(node smoke16.mjs)"
+    ]
+  }
+}

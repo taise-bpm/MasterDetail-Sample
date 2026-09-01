@@ -1,3 +1,5 @@
+import { formatFieldValue } from '../../utils/formatFieldValue';
+
 // Generic delete-confirmation modal, shared the same way as RecordViewer.
 const ConfirmDeleteModal = ({ title, fields, record, onConfirm, onCancel }) => (
   <>
@@ -11,7 +13,7 @@ const ConfirmDeleteModal = ({ title, fields, record, onConfirm, onCancel }) => (
       <p>Are you sure you want to delete the selected record?</p>
       {fields.map((field) => (
         <p key={field.name}>
-          <strong>{field.label}:</strong> {record?.[field.name]}
+          <strong>{field.label}:</strong> {formatFieldValue(field, record?.[field.name])}
         </p>
       ))}
       <hr />

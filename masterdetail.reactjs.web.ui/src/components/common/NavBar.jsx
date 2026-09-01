@@ -13,8 +13,17 @@ const NavBar = () => (
       <NavLink to="/detail-child" className={({ isActive }) => (isActive ? 'active' : '')}>
         Detail / Child
       </NavLink>
+      <NavLink to="/master" className={({ isActive }) => (isActive ? 'active' : '')}>
+        Masters
+      </NavLink>
+      <NavLink to="/detail" className={({ isActive }) => (isActive ? 'active' : '')}>
+        Details
+      </NavLink>
       <NavLink to="/child" className={({ isActive }) => (isActive ? 'active' : '')}>
-        Child Records
+        Children
+      </NavLink>
+      <NavLink to="/controls-demo" className={({ isActive }) => (isActive ? 'active' : '')}>
+        Controls Demo
       </NavLink>
     </div>
   </nav>
