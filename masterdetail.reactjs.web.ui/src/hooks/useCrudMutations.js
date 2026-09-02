@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { sanitizeForSubmit } from '../entities/fieldUtils';
 
 // Generic create/update/delete workflow shared by Master, Detail and Child:
 // calls the entity's API, reports success/failure via toast, and briefly
 // highlights the affected row. Only the entity's `api` + `idField` + `label`
-// change between tables - the workflow itself doesn't.
-const useCrudMutations = ({ api, idField, entityLabel, showToast, onCreated, onUpdated, onDeleted }) => {
+// + `fields` change between tables - the workflow itself doesn't.
+const useCrudMutations = ({ api, idField, fields, entityLabel, showToast, onCreated, onUpdated, onDeleted }) => {
   const [highlightedRowId, setHighlightedRowId] = useState(null);
 
   const highlight = (id) => {
@@ -19,7 +20,7 @@ const useCrudMutations = ({ api, idField, entityLabel, showToast, onCreated, onU
 
   const create = async (values) => {
     try {
-      const created = await api.create(values);
+      const created = await api.create(sanitizeForSubmit(fields, values));
       onCreated?.(created);
       showToast('success', `${entityLabel} added successfully!`);
       highlight(created[idField]);
@@ -32,7 +33,7 @@ const useCrudMutations = ({ api, idField, entityLabel, showToast, onCreated, onU
 
   const update = async (values) => {
     try {
-      await api.update(values);
+      await api.update(sanitizeForSubmit(fields, values));
       onUpdated?.(values);
       showToast('success', `${entityLabel} updated successfully!`);
       highlight(values[idField]);

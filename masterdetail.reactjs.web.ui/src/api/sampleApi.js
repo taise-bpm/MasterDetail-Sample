@@ -24,7 +24,7 @@ let records = [
     notes: '',
     quantity: 1,
     startDate: '01-09-2026',
-    appointmentAt: '',
+    appointmentAt: null,
     isActive: false,
     priority: 'low',
     status: 'draft',

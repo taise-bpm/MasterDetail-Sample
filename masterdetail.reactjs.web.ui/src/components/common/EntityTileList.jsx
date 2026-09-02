@@ -34,6 +34,7 @@ const EntityTileList = ({ entity, selectedId, onSelect, listFilters = {} }) => {
   const { create, update, remove, highlightedRowId } = useCrudMutations({
     api,
     idField,
+    fields,
     entityLabel: label,
     showToast,
     onCreated: (created) => setRecords((prev) => [created, ...prev]),

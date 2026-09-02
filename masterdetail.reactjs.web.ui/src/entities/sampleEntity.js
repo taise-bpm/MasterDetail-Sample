@@ -22,7 +22,10 @@ export const sampleEntity = {
     notes: '',
     quantity: '',
     startDate: '',
-    appointmentAt: '',
+    // null, not '' - appointmentAt is optional and DateTime?-shaped on a real
+    // API; sanitizeForSubmit would catch a stray '' anyway, but the field's
+    // own "no value" representation should be correct from the start too.
+    appointmentAt: null,
     isActive: false,
     priority: 'medium',
     status: '',

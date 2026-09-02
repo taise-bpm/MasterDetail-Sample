@@ -63,6 +63,7 @@ const EntityGridPage = ({ entity, breadcrumbItems, filterParamNames = [] }) => {
   const { create, update, remove, highlightedRowId } = useCrudMutations({
     api,
     idField,
+    fields,
     entityLabel: label,
     showToast,
     onCreated: () => load(1, pageSize),
